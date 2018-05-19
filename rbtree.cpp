@@ -195,6 +195,46 @@ void RBTree::BSTadd(Node *& root, int value) {
   }
 }
 
+void RBTree::BSTremove(Node *& root, int value) {
+  if (search(root, num) == true) {
+    if (num < root->value) {
+      remove(root->left, num);
+    } else if (num > root->value) {
+      remove(root->right, num);
+    } else {
+      //leaf case
+      if ((root->right == NULL) && (root->left == NULL)) {
+	delete root;
+	root = NULL;
+      }
+      //internal node with only left child
+      else if ((root->right == NULL)) {
+	Node* todelete = root;
+	root = root->left;
+	delete todelete;
+      }
+      //internal node with only right child
+      else if ((root->left == NULL)) {
+        Node* todelete = root;
+        root = root->right;
+        delete todelete;
+      }
+      //internal node has two children
+      else {
+	//find in order successor
+	Node* successor = root->right;
+	while (successor->left != NULL) {
+	  successor = successor->left;
+	}
+	root->value = successor->value;
+	remove(root->right, successor->value);
+      }
+    }
+  } else {
+    cout << "Cannot remove.  The number is not present." << endl;
+  }
+}
+
 Node* RBTree::getNode(int value) {
   Node* current = root;
   while (current != NULL) {
