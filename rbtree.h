@@ -8,6 +8,7 @@
 //we can define black and red as integers so that it is easier to process and read
 #define BLACK 0
 #define RED 1
+#define DOUBLE_BLACK 2
 
 using namespace std;
 
@@ -53,7 +54,7 @@ class RBTree {
   void add(int value);
   void print(); //to print
   void search(int value); //to search
-  void remove(int value); //to remove
+  void remove(Node *&, int value);
 };
 
 #endif

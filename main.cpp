@@ -3,7 +3,7 @@ David Chen
 C++ 2018
 Red Black Tree - Insertion Program
 With help from Vikram Kashyap
-Implemented from algorithm on https://www.geeksforgeeks.org/red-black-tree-set-2-insert/
+Implemented from algorithm on https://www.geeksforgeeks.org/red-black-tree
 */
 
 //libraries
@@ -55,7 +55,7 @@ int main() {
       int val;
       cout << "Enter value: " << endl;
       cin >> val;
-      tree.remove(val);
+      tree.remove(root, val);
     } else if (method == 'Q') {
       break;
     } else {
