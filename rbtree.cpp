@@ -166,7 +166,7 @@ void RBTree::print() {
       queue.pop();
       counter++;
       if (current == NULL || current->isNULL()) {
-        cout << "-,";
+        cout << "-" << (current->color==BLACK?"B":"R") << ",";
         queue.push(NULL);
         queue.push(NULL);
       } else {
@@ -193,95 +193,167 @@ void RBTree::BSTadd(Node *& root, int value) {
   }
 }
 
-//standard BST remove with some changes
-void RBTree::remove(Node *& root, int value) {
+//standard BST remove with changes
+void RBTree::remove(int value) {
   Node* u; //the node that replaces v
   Node* v = getNode(value); // the deleted node
-
+  cout << "Color of v at first: " << v->color << endl;
+  cout << "Color of v child" << v->left->color << endl;
   //Step 1: Standard BST remove with u and v node pointers
-  if (search(value) == true) {
-    if (value < root->value) {
-      remove(root->left, value);
-    } else if (value > root->value) {
-      remove(root->right, value);
+  if (searchNode(value)) {
+
+    //set v
+    if (!(v->left->isNULL()) && !(v->right->isNULL())) {
+      //find in order successor
+      Node* successor = v->right;
+      while (!(successor->left->isNULL())) {
+        successor = successor->left;
+      }
+      v->value = successor->value;
+      v = successor;
+      cout << "v set to successor" << endl;
+    }
+    cout << "Value of v: " << v->value << endl;
+    cout << "Color of v at first: " << v->color << endl;
+    //set u
+    //leaf case
+    if (v->right->isNULL() && v->left->isNULL()) {
+      cout << "Color of v at 0.20: " << v->color << endl;
+      u = v->left;
+      delete v->right;
+      cout << "LEAF!!!" << endl;
+    }
+    //internal node with only left child
+    else if (v->right->isNULL()) {
+      u = v->left;
+      delete v->right;
+    }
+    //internal node with only right child
+    else if (v->left->isNULL()) {
+      u = v->right;
+      delete v->left;
+    }
+    cout << "Value of u: " << u->value << endl;
+    cout << "Color of v at 0.5 time" << v->color << endl;
+    //remove v
+    //root case first
+    if (v == root) {
+      u->parent = NULL;
+      root = u;
     } else {
-      //leaf case
-      if ((root->right->isNULL()) && (root->left->isNULL())) {
-	delete root;
-	root->setNULL();
-	u = root;
-      }
-      //internal node with only left child
-      else if ((root->right->isNULL())) {
-	Node* todelete = root;
-	root = root->left;
-	delete todelete;
-	u = root;
-      }
-      //internal node with only right child
-      else if ((root->left->isNULL())) {
-        Node* todelete = root;
-        root = root->right;
-        delete todelete;
-	u = root;
-      }
-      //internal node has two children
-      else {
-	//find in order successor
-	Node* successor = root->right;
-	while (!(successor->left->isNULL())) {
-	  successor = successor->left;
-	}
-	u = successor;
-	root->value = successor->value;
-	remove(root->right, successor->value);
+      if (v->isLeft()) {
+	v->parent->setLeft(u);
+      } else {
+	v->parent->setRight(u);
       }
     }
-  } else {
+    cout << "Value of v 2nd time: " << v->value << endl;
+    cout << "Color of v: " << v->color << endl;
+    cout << "Color of u: " << u->color << endl;
+    
+    //rebalancing the tree
+    //Step 2: Simple case
+    if (u->color == RED || v->color == RED) {
+      u->color = BLACK;
+      cout << "Simple case" << endl;
+    }
+    //Step 3: If both u and v are black
+    else if (u->color == BLACK && v->color == BLACK) {
+      //step 3.1
+      u->color = DOUBLE_BLACK;
+      //step 3.2 and 3.3
+      while (u->color == DOUBLE_BLACK) {
+	Node* s = u->getSibling();
+	cout << "Value of s: " << s->value << endl;
+	//step 3.2a
+	if (s->color == BLACK && (s->left->color == RED || s->right->color == RED)) {
+	  //set r (the red child of sibling)
+	  Node* r;
+	  if (s->left->color == RED) {
+	    r = s->left;
+	  } else {
+	    r = s->right; //default to right if both are red
+	  }
+	  cout << "Value of r: " << r->value << endl;
+	  //step 3.2a(i) - Left left
+	  if (s->isLeft() && r->isLeft()) {
+	    if (s->parent->color == BLACK) {
+	      r->color = BLACK;
+	      rotateRight(s->parent);
+	      u->color = BLACK;
+	    } else {
+	      rotateRight(s->parent);
+	      u->parent->color = BLACK;
+	      s->color = RED;
+	      r->color = BLACK;
+	      u->color = BLACK;
+	    }
+	  } 
+	  
+	  //step 3.2a(ii) - Left Right
+	  else if (s->isLeft() && r->isRight()) {
+	    rotateLeft(s);
+	    s->color = RED;
+	    r->color = BLACK;
+	  }
+	  //step 3.2a(iii) - Right Right
+	  else if (s->isRight() && r->isRight()) {
+	    if (s->parent->color == BLACK) {
+	      r->color = BLACK;
+	      rotateLeft(s->parent);
+	      u->color = BLACK;
+	    } else {
+	      rotateLeft(s->parent);
+	      u->parent->color = BLACK;
+	      s->color = RED;
+	      r->color = BLACK;
+	      u->color = BLACK;
+	    }
+	  }
+	  //step 3.2a(iv) - Right left
+	  else if (s->isRight() && r->isLeft()) {
+	    rotateRight(s);
+	    s->color = RED;
+	    r->color = BLACK;
+	  }
+	} //step 3.2a end
+      //step 3.2b
+	else if (s->color == BLACK && (s->left->color == BLACK && s->right->color == BLACK)) {
+	  s->color = RED;
+	  cout << "Value of s: " << s->value << endl;
+	  s->parent->color++; //red goes to black, black goes to double black
+	  u->color = BLACK;
+	  u = u->parent;
+      }
+      
+	//step 3.2c
+        else if (s->color == RED) {
+	  s->color = BLACK;
+	  s->parent->color = RED;
+	  //step 3.2c(i) - Left
+          if (s->isLeft()) {
+	    rotateRight(s->parent);
+          }
+          //step 3.2c(ii) - Right
+          else if (s->isRight()) {
+            rotateLeft(s->parent);
+          }
+        } // 3.2c end
+	//step 3,3
+	else if (u == root) {
+	  u->color = BLACK;
+	} //step 3.3 end
+      } //step 3.2 + 3.3 (while loop)
+    } //step 3
+    delete v;
+  }
+
+  else {
     cout << "Cannot remove.  The number is not present." << endl;
   }
-  //Step 2: Simple Case (if either u or v is red)
-  if ((u->color == RED) || (v->color == RED)) {
-    u->color = BLACK;
-  }
-  //Step 3: If both u and v are black
-  else if ((u->color == BLACK) && (v->color == BLACK)) {
-    //step 3,1
-    u->color = DOUBLE_BLACK;
-    //step 3.2
-    if ((u->color == DOUBLE_BLACK) && (u != root)) {
-      Node* s = u->getSibling();
-      //step 3.2a
-      if ((s->color == BLACK) && ((s->left->color == RED) || (s->right->color == RED))) {
-	if (s->left->color == RED) {
-	  Node* r = s->left;
-	} else {
-	  Node* r = s->right;
-	}
-	//step 3.2a(i)
+  
 
-	//step 3.2a(ii)
 
-	//step 3.2a(iii)
-
-	//step 3.2a(iv)
-	
-      }
-      //step 3.2b
-      else if ((s->color == BLACK) && ((s->left->color == BLACK) && (s->right->color == BLACK))) {
-
-      }
-      //step 3.2c
-      else if (s->color == RED) {
-	//step 3.2c(i)
-	//step 3.2c(iii)
-      }
-      //step 3,3
-      else if (u == root) {
-	u->color = BLACK;
-      }
-    } //step 3.2
-  } //step 3
 } // remove
 
 Node* RBTree::getNode(int value) {
@@ -304,6 +376,10 @@ void RBTree::search(int value) {
   } else {
     cout << "Failure: The number is not in the tree." << endl;
   }
+}
+
+bool RBTree::searchNode(int value) {
+  return (getNode(value) != NULL);
 }
 
 void RBTree::rotateLeft(Node* node) {

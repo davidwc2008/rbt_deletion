@@ -55,7 +55,7 @@ int main() {
       int val;
       cout << "Enter value: " << endl;
       cin >> val;
-      tree.remove(root, val);
+      tree.remove(val);
     } else if (method == 'Q') {
       break;
     } else {
