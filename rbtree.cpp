@@ -87,15 +87,17 @@ RBTree::RBTree() {
 
 void RBTree::add(int value) {
   BSTadd(root, value); // this is step one
+  cout << "Root value: " << root->value << endl;
   bool done = false;
   Node* current = getNode(value);
-
+  cout << "Made it to add" << endl;
+  cout << "Current value: " << current->value << endl;
   while (!done) {
     //root case (current->parent == NULL)
     if (current == root) {
       current->color = BLACK;
       done = true;
-      //cout << "Ran root case" << endl;
+      cout << "Ran root case" << endl;
     }
     //x parent is not black case
     else if (current->parent->color != BLACK) {
@@ -134,20 +136,20 @@ void RBTree::add(int value) {
           parent->color = grandparent->color;
           grandparent->color = temp;
           done = true;
-	  //cout << "right right" << endl;
+	  cout << "right right" << endl;
 	}
 	//SUBSubcase #4: right left case
 	else {
 	  rotateRight(parent);
 	  current = parent;
 	  //repeat right right case
-	  //cout << "right left" << endl;
+	  cout << "right left" << endl;
 	}
       }
     } // the end of the if
     else if (current->parent->color == BLACK) {
       done = true;
-      //cout << "parent is black" << endl;
+      cout << "parent is black" << endl;
     }
   } // while loop
 } // the function
@@ -161,15 +163,19 @@ void RBTree::print() {
     moredata = false;
     int levelsize = queue.size();
     int counter = 0;
+    cout << "Level size: " << levelsize << endl;
     while (counter != levelsize) {
       Node* current = queue.front();
+      cout << "Current's value: " << current->value << endl;
       queue.pop();
       counter++;
       if (current == NULL || current->isNULL()) {
         cout << "-" << (current->color==BLACK?"B":"R") << ",";
         queue.push(NULL);
         queue.push(NULL);
+	cout << "In the if" << endl;
       } else {
+	cout << "In the else" << endl;
         cout << current->value << (current->color==BLACK?"B":"R") << ",";
         moredata = true;
         queue.push(current->left);
@@ -178,19 +184,22 @@ void RBTree::print() {
     }
     cout << endl;
   }
+  cout << "Print ended" << endl;
 }
 
 void RBTree::BSTadd(Node *& root, int value) {
   if (root->isNULL()) {
     root->value = value;
-    root->color = RED;
+    root->color = RED; //make the newly inserted node as RED
     root->setLeft(new Node());
     root->setRight(new Node());
+    cout << "Root value in BST: " << root->value << endl;
   } else if (root->value > value) {
     BSTadd(root->left, value);
   } else if (root->value < value) {
     BSTadd(root->right, value);
   }
+  cout << "Root value at the end of BST: " << root->value << endl;
 }
 
 //standard BST remove with changes
@@ -384,6 +393,7 @@ bool RBTree::searchNode(int value) {
 
 void RBTree::rotateLeft(Node* node) {
   Node* parent = node->parent;
+  //cout << "Node Parent: " << parent->value << endl;
   if (node == root) {
     root = node->right;
   } else {
@@ -401,7 +411,7 @@ void RBTree::rotateLeft(Node* node) {
 void RBTree::rotateRight(Node* node) {
   Node* parent = node->parent;
   if (node == root) {
-    root == node->left;
+    root = node->left;
   } else {
     if (node->isLeft()) {
       parent->setLeft(node->left);
