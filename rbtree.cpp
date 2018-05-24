@@ -94,6 +94,7 @@ void RBTree::add(int value) {
   cout << "Current value: " << current->value << endl;
   while (!done) {
     //root case (current->parent == NULL)
+    cout << "Root right before: " << root->value << endl;
     if (current == root) {
       current->color = BLACK;
       done = true;
@@ -110,7 +111,7 @@ void RBTree::add(int value) {
 	uncle->color = BLACK;
 	grandparent->color = RED;
 	current = grandparent; //while loop repeats
-	//cout << "Uncle is red" << endl;
+	cout << "Uncle is red" << endl;
       } else {
 	//Subcase #2: Uncle is black
 	//SUBSubcase #1: left left
@@ -120,14 +121,14 @@ void RBTree::add(int value) {
 	  parent->color = grandparent->color;
 	  grandparent->color = temp;
 	  done = true;
-	  //cout << "Left left" << endl;
+	  cout << "Left left" << endl;
 	}
 	//SUBSubcase #2: left right
 	else if (parent->isLeft() && current->isRight()) {
 	  rotateLeft(parent);
 	  current = parent;
 	  //repeat left left case
-	  //cout << "Left right" << endl;
+	  cout << "Left right" << endl;
 	}
 	//SUBSubcase #3: right right case
 	else if (parent->isRight() && current->isRight()) {
@@ -163,19 +164,19 @@ void RBTree::print() {
     moredata = false;
     int levelsize = queue.size();
     int counter = 0;
-    cout << "Level size: " << levelsize << endl;
+    //cout << "Level size: " << levelsize << endl;
     while (counter != levelsize) {
       Node* current = queue.front();
-      cout << "Current's value: " << current->value << endl;
+      //cout << "Current's value: " << current->value << endl;
       queue.pop();
       counter++;
       if (current == NULL || current->isNULL()) {
-        cout << "-" << (current->color==BLACK?"B":"R") << ",";
+        cout << "-" << /*(current->color==BLACK?"B":"R") <<*/ ",";
         queue.push(NULL);
         queue.push(NULL);
-	cout << "In the if" << endl;
+	//cout << "In the if" << endl;
       } else {
-	cout << "In the else" << endl;
+	//cout << "In the else" << endl;
         cout << current->value << (current->color==BLACK?"B":"R") << ",";
         moredata = true;
         queue.push(current->left);
@@ -206,8 +207,8 @@ void RBTree::BSTadd(Node *& root, int value) {
 void RBTree::remove(int value) {
   Node* u; //the node that replaces v
   Node* v = getNode(value); // the deleted node
-  cout << "Color of v at first: " << v->color << endl;
-  cout << "Color of v child" << v->left->color << endl;
+  //cout << "Color of v at first: " << v->color << endl;
+  //cout << "Color of v child" << v->left->color << endl;
   //Step 1: Standard BST remove with u and v node pointers
   if (searchNode(value)) {
 
