@@ -32,7 +32,9 @@ int main() {
   string token;
   while(getline(inFile, token, ',')) { //getline reads until the specified character (in this case it is a comma)
     int num = atoi(token.c_str()); //c_str coverts to character array; atoi is for converting to integer
-    tree.add(num);
+    if (num > 0) {
+      tree.add(num);
+    }
   }
   
   while (method != 'Q') {
@@ -55,7 +57,11 @@ int main() {
       int val;
       cout << "Enter value: " << endl;
       cin >> val;
-      tree.remove(val);
+      if (val > 0) {
+	tree.remove(val);
+      } else {
+	cout << "Error: No zeroes allowed" << endl;
+      }
     } else if (method == 'Q') {
       break;
     } else {
