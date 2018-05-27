@@ -1,7 +1,7 @@
 /*
 David Chen
 C++ 2018
-Red Black Tree - Insertion Program
+Red Black Tree - Deletion Program
 With help from Vikram Kashyap
 Implemented from algorithm on https://www.geeksforgeeks.org/red-black-tree
 */
